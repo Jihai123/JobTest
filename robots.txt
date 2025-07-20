@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://jobtest.chatgpt5x.com/sitemap.xml

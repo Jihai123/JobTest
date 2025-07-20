@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>薪资值得度评估报告 - 你的工作真实价值分析</title>
+    <meta name="description" content="基于多维度分析的个人工作价值评估报告">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #fce7f3 0%, #fdf2f8 50%, #fff1f2 100%);
+        }
+        .report-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .score-poor { color: #dc2626; }
+        .score-average { color: #f59e0b; }
+        .score-good { color: #3b82f6; }
+        .score-great { color: #22c55e; }
+        .score-excellent { color: #8b5cf6; }
+        .score-perfect { color: #eab308; }
+        
+        .emoji-large {
+            font-size: 4rem;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+        }
+        
+        .section-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        
+        .section-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .data-item {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .highlight-value {
+            background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+            border: 1px solid #3b82f6;
+            border-radius: 8px;
+            color: #1e40af;
+            font-weight: 600;
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .stagger-1 { animation-delay: 0.1s; }
+        .stagger-2 { animation-delay: 0.2s; }
+        .stagger-3 { animation-delay: 0.3s; }
+        .stagger-4 { animation-delay: 0.4s; }
+        .stagger-5 { animation-delay: 0.5s; }
+        .stagger-6 { animation-delay: 0.6s; }
+        .stagger-7 { animation-delay: 0.7s; }
+        .stagger-8 { animation-delay: 0.8s; }
+
+        /* 工作性价比评估专用样式 */
+        .score-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border: 2px solid #cbd5e1;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .score-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #ef4444, #f59e0b, #eab308, #22c55e, #3b82f6, #8b5cf6);
+        }
+        
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+            border: 3px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin: 0 auto 1rem;
+        }
+        
+        .score-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 0.25rem;
+        }
+        
+        .score-text {
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <div class="max-w-2xl mx-auto px-4 py-8">
+        <!-- 标题区域 -->
+        <div class="text-center mb-8 animate-fade-in">
+            <div id="emoji" class="emoji-large mb-4">😐</div>
+            <h1 class="text-3xl font-bold mb-2 text-gray-800">你的工作性价比报告</h1>
+            <div class="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-lg">
+                <span id="scoreValue" class="text-2xl font-bold">--</span>
+                <span id="scoreLabel" class="text-gray-600">--</span>
+            </div>
+        </div>
+
+        <!-- 主要评估卡片 -->
+        <div class="report-card p-8 mb-6 animate-fade-in stagger-1">
+            <div class="grid grid-cols-2 gap-6 mb-6">
+                <div class="text-center">
+                    <div class="text-gray-600 text-sm mb-1">年工作天数</div>
+                    <div id="workDaysYear" class="text-2xl font-bold text-gray-800">--天</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-gray-600 text-sm mb-1">平均日薪</div>
+                    <div id="avgDailySalary" class="text-2xl font-bold text-gray-800">--</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 详细分析 -->
+        <div class="space-y-4">
+            <!-- 基础信息 -->
+            <div class="section-card p-6 animate-fade-in stagger-2">
+                <div class="flex items-center mb-4">
+                    <span class="text-2xl mr-3">💼</span>
+                    <h2 class="text-lg font-semibold text-gray-800">基本情况</h2>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="data-item p-3">
+                        <div class="text-xs text-gray-500">工作地区</div>
+                        <div id="cityInfo" class="font-medium">--</div>
+                    </div>
+                    <div class="data-item p-3">
+                        <div class="text-xs text-gray-500">是否家乡</div>
+                        <div id="homeTownInfo" class="font-medium">--</div>
+                    </div>
+                    <div class="data-item p-3">
+                        <div class="text-xs text-gray-500">工作年限</div>
+                        <div id="workYearsInfo" class="font-medium">--</div>
+                    </div>
+                    <div class="data-item p-3">
+                        <div class="text-xs text-gray-500">职业类型</div>
+                        <div id="jobStabilityInfo" class="font-medium">--</div>
+                    </div>
+                </div>
+                <div id="basicAdvantages" class="mt-4 p-3 bg-green-50 rounded-lg border border-green-200">
+                    <p class="text-sm text-green-800">
+                        <span class="font-semibold">✓ 优势：</span>
+                        <span id="basicAdvantagesText">正在分析...</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- 工作时间分析 -->
+            <div class="section-card p-6 animate-fade-in stagger-3">
+                <div class="flex items-center mb-4">
+                    <span class="text-2xl mr-3">⏱️</span>
+                    <h2 class="text-lg font-semibold text-gray-800">工作时间</h2>
+                </div>
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <div class="data-item p-3">
+                        <div class="text-xs text-gray-500">每日工时</div>
+                        <div id="workHoursInfo" class="font-medium">-- 小时</div>
+                    </div>
+                    <div class="data-item p-3">
+                        <div class="text-xs text-gray-500">通勤时间</div>
+                        <div id="commuteHoursInfo" class="font-medium">-- 小时</div>
+                    </div>
+                    <div class="data-item p-3">
+                        <div class="text-xs text-gray-500">休息摸鱼</div>
+                        <div id="restTimeInfo" class="font-medium">-- 小时</div>
+                    </div>
+                    <div class="data-item p-3">
+                        <div class="text-xs text-gray-500">远程办公</div>
+                        <div id="wfhInfo" class="font-medium">--/-- 天</div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 gap-3 mb-4">
+                    <div class="data-item p-3 text-center">
+                        <div class="text-xs text-gray-500">年假</div>
+                        <div id="annualLeaveInfo" class="font-medium">--天</div>
+                    </div>
+                    <div class="data-item p-3 text-center">
+                        <div class="text-xs text-gray-500">病假</div>
+                        <div id="paidSickLeaveInfo" class="font-medium">--天</div>
+                    </div>
+                    <div class="data-item p-3 text-center">
+                        <div class="text-xs text-gray-500">法定假日</div>
+                        <div id="publicHolidaysInfo" class="font-medium">--天</div>
+                    </div>
+                </div>
+                <div id="timeAnalysis" class="p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                    <p class="text-sm text-yellow-800">
+                        <span class="font-semibold">⚠ 注意：</span>
+                        <span id="timeAnalysisText">正在分析工作时间配置...</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- 工作环境 -->
+            <div class="section-card p-6 animate-fade-in stagger-4">
+                <div class="flex items-center mb-4">
+                    <span class="text-2xl mr-3">🏢</span>
+                    <h2 class="text-lg font-semibold text-gray-800">工作环境</h2>
+                </div>
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <div class="data-item p-3">
+                        <div class="text-xs text-gray-500">办公环境</div>
+                        <div id="workEnvironmentInfo" class="font-medium">--</div>
+                    </div>
+                    <div class="data-item p-3">
+                        <div class="text-xs text-gray-500">领导关系</div>
+                        <div id="leadershipInfo" class="font-medium">--</div>
+                    </div>
+                    <div class="data-item p-3">
+                        <div class="text-xs text-gray-500">同事关系</div>
+                        <div id="teamworkInfo" class="font-medium">--</div>
+                    </div>
+                    <div class="data-item p-3">
+                        <div class="text-xs text-gray-500">班车服务</div>
+                        <div id="shuttleInfo" class="font-medium">--</div>
+                    </div>
+                </div>
+                <div class="data-item p-3 mb-4">
+                    <div class="text-xs text-gray-500">食堂情况</div>
+                    <div id="canteenInfo" class="font-medium">--</div>
+                </div>
+                <div id="environmentAnalysis" class="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <p class="text-sm text-blue-800">
+                        <span class="font-semibold">💡 分析：</span>
+                        <span id="environmentAnalysisText">正在分析工作环境...</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- 教育背景 -->
+            <div class="section-card p-6 animate-fade-in stagger-5">
+                <div class="flex items-center mb-4">
+                    <span class="text-2xl mr-3">📚</span>
+                    <h2 class="text-lg font-semibold text-gray-800">教育与工作经验</h2>
+                </div>
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <div class="data-item p-3">
+                        <div class="text-xs text-gray-500">最高学历</div>
+                        <div id="degreeTypeInfo" class="font-medium">--</div>
+                    </div>
+                    <div class="data-item p-3">
+                        <div class="text-xs text-gray-500">学校类型</div>
+                        <div id="schoolTypeInfo" class="font-medium">--</div>
+                    </div>
+                    <div class="data-item p-3">
+                        <div class="text-xs text-gray-500">工作年限</div>
+                        <div id="workYearsInfo2" class="font-medium">--</div>
+                    </div>
+                    <div class="data-item p-3">
+                        <div class="text-xs text-gray-500">工作性质</div>
+                        <div id="jobStabilityInfo2" class="font-medium">--</div>
+                    </div>
+                </div>
+                <div id="educationAnalysis" class="p-3 bg-purple-50 rounded-lg border border-purple-200">
+                    <p class="text-sm text-purple-800">
+                        <span class="font-semibold">🎓 评价：</span>
+                        <span id="educationAnalysisText">正在分析教育背景...</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- 薪资分析 -->
+            <div class="section-card p-6 animate-fade-in stagger-6">
+                <div class="flex items-center mb-4">
+                    <span class="text-2xl mr-3">💰</span>
+                    <h2 class="text-lg font-semibold text-gray-800">薪资待遇</h2>
+                </div>
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <div class="data-item p-3">
+                        <div class="text-xs text-gray-500">平均日薪</div>
+                        <div id="dailySalaryInfo" class="font-medium">--/天</div>
+                    </div>
+                    <div class="data-item p-3">
+                        <div class="text-xs text-gray-500">年工作天数</div>
+                        <div id="workDaysInfo" class="font-medium">--天</div>
+                    </div>
+                </div>
+                <div id="salaryAnalysis" class="p-3 bg-orange-50 rounded-lg border border-orange-200">
+                    <p class="text-sm text-orange-800">
+                        <span class="font-semibold">💡 分析：</span>
+                        <span id="salaryAnalysisText">正在分析薪资水平...</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- 工作性价比评估 - 移到下面并使用特殊样式 -->
+            <div class="score-card p-8 animate-fade-in stagger-7">
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">🎯 工作性价比评估</h2>
+                    
+                    <div class="score-circle">
+                        <div id="finalScoreNumber" class="score-number">--</div>
+                        <div id="finalScoreText" class="score-text">--</div>
+                    </div>
+                    
+                    <div class="text-lg text-gray-600 mb-6">
+                        综合评估结果
+                    </div>
+                </div>
+                
+                <div class="space-y-4">
+                    <div id="scoreProblems" class="p-4 bg-red-50 rounded-lg border border-red-200">
+                        <p class="text-sm text-red-800">
+                            <span class="font-semibold">📉 主要问题：</span>
+                            <span id="scoreProblemsText">正在分析主要问题...</span>
+                        </p>
+                    </div>
+                    <div id="scoreImprovements" class="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                        <p class="text-sm text-yellow-800">
+                            <span class="font-semibold">💡 改善建议：</span>
+                            <span id="scoreImprovementsText">正在生成改善建议...</span>
+                        </p>
+                    </div>
+                    <div id="scoreAdvantages" class="p-4 bg-green-50 rounded-lg border border-green-200">
+                        <p class="text-sm text-green-800">
+                            <span class="font-semibold">🌟 积极因素：</span>
+                            <span id="scoreAdvantagesText">正在分析积极因素...</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 个性化建议 -->
+            <div class="section-card p-6 animate-fade-in stagger-8">
+                <div class="flex items-center mb-4">
+                    <span class="text-2xl mr-3">🎯</span>
+                    <h2 class="text-lg font-semibold text-gray-800">个性化建议</h2>
+                </div>
+                <div class="space-y-4">
+                    <div class="border-l-4 border-blue-400 pl-4">
+                        <h3 class="font-semibold text-gray-800 mb-2">短期目标（6个月内）</h3>
+                        <ul id="shortTermGoals" class="text-sm text-gray-600 space-y-1">
+                            <li>• 正在生成个性化建议...</li>
+                        </ul>
+                    </div>
+                    <div class="border-l-4 border-green-400 pl-4">
+                        <h3 class="font-semibold text-gray-800 mb-2">中期规划（1-2年）</h3>
+                        <ul id="mediumTermGoals" class="text-sm text-gray-600 space-y-1">
+                            <li>• 正在生成个性化建议...</li>
+                        </ul>
+                    </div>
+                    <div class="border-l-4 border-purple-400 pl-4">
+                        <h3 class="font-semibold text-gray-800 mb-2">长期愿景（3-5年）</h3>
+                        <ul id="longTermGoals" class="text-sm text-gray-600 space-y-1">
+                            <li>• 正在生成个性化建议...</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 页脚 -->
+        <div class="text-center mt-8 animate-fade-in stagger-8">
+            <div class="bg-white rounded-lg p-4 shadow-lg mb-4">
+                <p class="text-sm text-gray-600 mb-2">基于多维度分析定制</p>
+                <p class="text-xs text-gray-500">chatgpt5x.com</p>
+            </div>
+            
+            <div class="flex justify-center gap-4">
+                <button onclick="downloadReport()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-lg transition-colors flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    下载报告
+                </button>
+                
+                <button onclick="shareReport()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg shadow-lg transition-colors flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path>
+                    </svg>
+                    分享报告
+                </button>
+                
+                <button onclick="window.history.back()" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg shadow-lg transition-colors flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12"></path>
+                    </svg>
+                    返回工具
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 解析URL参数
+        function getUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                value: params.get('value') || '2.5',
+                assessment: params.get('assessment') || 'rating_good',
+                dailySalary: params.get('dailySalary') || '1000',
+                workDaysPerYear: params.get('workDaysPerYear') || '250',
+                currencySymbol: params.get('currencySymbol') || '¥',
+                cityFactor: params.get('cityFactor') || '0.70',
+                workHours: params.get('workHours') || '8',
+                commuteHours: params.get('commuteHours') || '2',
+                restTime: params.get('restTime') || '2',
+                workDaysPerWeek: params.get('workDaysPerWeek') || '5',
+                wfhDaysPerWeek: params.get('wfhDaysPerWeek') || '0',
+                annualLeave: params.get('annualLeave') || '5',
+                paidSickLeave: params.get('paidSickLeave') || '3',
+                publicHolidays: params.get('publicHolidays') || '13',
+                workEnvironment: params.get('workEnvironment') || '1.0',
+                leadership: params.get('leadership') || '1.0',
+                teamwork: params.get('teamwork') || '1.0',
+                degreeType: params.get('degreeType') || 'bachelor',
+                schoolType: params.get('schoolType') || 'firstTier',
+                education: params.get('education') || '1.0',
+                homeTown: params.get('homeTown') || 'no',
+                shuttle: params.get('shuttle') || '1.0',
+                canteen: params.get('canteen') || '1.0',
+                workYears: params.get('workYears') || '0',
+                jobStability: params.get('jobStability') || 'private',
+                countryCode: params.get('countryCode') || 'CN',
+                countryName: params.get('countryName') || '中国',
+                hasShuttle: params.get('hasShuttle') === 'true',
+                hasCanteen: params.get('hasCanteen') === 'true'
+            };
+        }
+
+        // 映射函数
+        function getCityText(factor) {
+            const f = parseFloat(factor);
+            if (f <= 0.70) return '一线城市';
+            if (f <= 0.80) return '新一线城市';
+            if (f <= 1.0) return '二线城市';
+            if (f <= 1.10) return '三线城市';
+            if (f <= 1.25) return '四线城市';
+            if (f <= 1.40) return '县城';
+            return '乡镇';
+        }
+
+        function getWorkEnvironmentText(env) {
+            const e = parseFloat(env);
+            if (e <= 0.8) return '偏僻的工厂/工地/户外';
+            if (e <= 0.9) return '工厂/工地/户外';
+            if (e <= 1.0) return '普通环境';
+            return 'CBD';
+        }
+
+        function getLeadershipText(rating) {
+            const r = parseFloat(rating);
+            if (r <= 0.7) return '对我不爽';
+            if (r <= 0.9) return '管理严格';
+            if (r <= 1.0) return '中规中矩';
+            if (r <= 1.1) return '善解人意';
+            return '我是嫡系';
+        }
+
+        function getTeamworkText(rating) {
+            const r = parseFloat(rating);
+            if (r <= 0.9) return '都是傻逼';
+            if (r <= 1.0) return '萍水相逢';
+            if (r <= 1.1) return '和和睦睦';
+            return '私交甚好';
+        }
+
+        function getShuttleText(shuttle, hasShuttle) {
+            if (!hasShuttle) return '无班车';
+            const s = parseFloat(shuttle);
+            if (s >= 1.0) return '无班车';
+            if (s >= 0.9) return '班车不便';
+            if (s >= 0.7) return '班车便利';
+            return '直达班车';
+        }
+
+        function getCanteenText(canteen, hasCanteen) {
+            if (!hasCanteen) return '无食堂';
+            const c = parseFloat(canteen);
+            if (c <= 1.0) return '无食堂';
+            if (c <= 1.05) return '一般食堂';
+            if (c <= 1.1) return '不错的食堂';
+            return '很棒的食堂';
+        }
+
+        function getDegreeText(type) {
+            const map = {
+                'belowBachelor': '专科及以下',
+                'bachelor': '本科',
+                'masters': '硕士',
+                'phd': '博士'
+            };
+            return map[type] || '本科';
+        }
+
+        function getSchoolText(type) {
+            const map = {
+                'secondTier': '二本三本',
+                'firstTier': '双非/QS200/USnews80',
+                'elite': '985211/QS50/USnews30'
+            };
+            return map[type] || '双非';
+        }
+
+        function getWorkYearsText(years) {
+            const map = {
+                '0': '应届生',
+                '1': '1-3年',
+                '3': '3-5年',
+                '5': '5-8年',
+                '8': '8-10年',
+                '10': '10-12年',
+                '12': '12年以上'
+            };
+            return map[years] || '应届生';
+        }
+
+        function getJobStabilityText(type) {
+            const map = {
+                'government': '政府/事业单位',
+                'state': '央/国企',
+                'foreign': '外企',
+                'private': '私企',
+                'dispatch': '派遣社员',
+                'freelance': '自由职业'
+            };
+            return map[type] || '私企';
+        }
+
+        function getScoreClass(value) {
+            const v = parseFloat(value);
+            if (v < 0.6) return 'score-poor';
+            if (v < 1.0) return 'score-poor';
+            if (v <= 1.8) return 'score-average';
+            if (v <= 2.5) return 'score-good';
+            if (v <= 3.2) return 'score-great';
+            if (v <= 4.0) return 'score-excellent';
+            return 'score-perfect';
+        }
+
+        function getEmoji(value) {
+            const v = parseFloat(value);
+            if (v < 0.6) return '😭';
+            if (v < 1.0) return '😔';
+            if (v <= 1.8) return '😐';
+            if (v <= 2.5) return '😊';
+            if (v <= 3.2) return '😁';
+            if (v <= 4.0) return '🤩';
+            return '🎉';
+        }
+
+        function getAssessmentText(assessment) {
+            const map = {
+                'rating_terrible': '糟糕透了',
+                'rating_poor': '较差',
+                'rating_average': '一般',
+                'rating_good': '良好',
+                'rating_great': '很好',
+                'rating_excellent': '优秀',
+                'rating_perfect': '完美'
+            };
+            return map[assessment] || '一般';
+        }
+
+        // 生成分析文本
+        function generateAnalysisTexts(params) {
+            const score = parseFloat(params.value);
+            const workYears = parseInt(params.workYears);
+            const isHomeTown = params.homeTown === 'yes';
+            const hasShuttle = params.hasShuttle;
+            const hasCanteen = params.hasCanteen;
+            
+            // 基本优势分析
+            let advantages = [];
+            if (isHomeTown) advantages.push('在家乡工作，享有家庭支持和较低生活成本');
+            if (hasShuttle) advantages.push('班车服务减轻通勤负担');
+            if (hasCanteen) advantages.push('食堂服务提升工作便利性');
+            if (workYears >= 5) advantages.push('丰富的工作经验为职业发展奠定基础');
+            if (params.jobStability === 'government' || params.jobStability === 'state') {
+                advantages.push('工作稳定性较好，福利保障完善');
+            }
+            
+            // 时间分析
+            const totalTime = parseFloat(params.workHours) + parseFloat(params.commuteHours);
+            let timeAnalysis = '';
+            if (totalTime >= 12) {
+                timeAnalysis = '每日总投入时间较长，工作强度偏高，建议关注工作生活平衡';
+            } else if (totalTime >= 10) {
+                timeAnalysis = '工作时间适中但仍有优化空间，可以考虑提高工作效率';
+            } else {
+                timeAnalysis = '工作时间安排合理，有较好的工作生活平衡';
+            }
+            
+            // 环境分析
+            let envAnalysis = '工作环境整体';
+            if (parseFloat(params.workEnvironment) >= 1.1) envAnalysis += '优秀';
+            else if (parseFloat(params.workEnvironment) >= 1.0) envAnalysis += '中等';
+            else envAnalysis += '一般';
+            
+            if (hasShuttle) envAnalysis += '，班车服务便利';
+            if (hasCanteen) envAnalysis += '，食堂质量不错';
+            envAnalysis += '。人际关系' + (parseFloat(params.teamwork) >= 1.1 ? '融洽' : '平和');
+            
+            // 教育分析
+            const degreeText = getDegreeText(params.degreeType);
+            const schoolText = getSchoolText(params.schoolType);
+            let eduAnalysis = `${degreeText}学历`;
+            if (params.schoolType === 'elite') eduAnalysis += '且毕业于名校，';
+            else eduAnalysis += '，';
+            eduAnalysis += `${workYears}年工作经验`;
+            if (workYears >= 8) eduAnalysis += '使你成为行业资深人士';
+            else if (workYears >= 3) eduAnalysis += '为职业发展提供良好基础';
+            else eduAnalysis += '正处于快速成长期';
+            
+            // 薪资分析
+            let salaryAnalysis = '';
+            if (score < 1.5) {
+                salaryAnalysis = '当前薪资水平可能未充分体现个人价值，建议评估是否有晋升或转岗机会';
+            } else if (score < 2.5) {
+                salaryAnalysis = '薪资水平基本合理，但仍有提升空间，可关注技能提升和职业发展';
+            } else {
+                salaryAnalysis = '薪资水平较为满意，与个人能力和市场水平基本匹配';
+            }
+            
+            // 综合评估问题、建议、优势
+            let problems = '', improvements = '', scoreAdvantages = '';
+            
+            if (score < 1.0) {
+                problems = '工作性价比偏低，可能存在工作时长过长、薪资偏低或工作环境不佳等问题';
+                improvements = '1) 重新评估职业规划；2) 考虑跳槽到更有竞争力的企业；3) 与雇主协商改善工作条件；4) 提升技能投资个人价值';
+            } else if (score < 2.0) {
+                problems = '工作性价比有待提升，主要体现在投入产出比不够理想';
+                improvements = '1) 申请内部调岗或晋升；2) 评估外部机会；3) 提升工作效率；4) 寻求技能培训机会';
+            } else if (score < 3.0) {
+                problems = '工作性价比良好但仍有优化空间';
+                improvements = '1) 争取更好的福利待遇；2) 寻找职业发展机会；3) 建立更广泛的人脉网络；4) 考虑副业发展';
+            } else {
+                problems = '工作性价比很好，整体表现优秀';
+                improvements = '1) 保持当前状态；2) 为长远发展做规划；3) 考虑帮助他人分享经验；4) 探索更高层次的职业目标';
+            }
+            
+            scoreAdvantages = advantages.length > 0 ? advantages.join('，') + '，这些都是很好的基础' : '具备基本的职业发展条件';
+            
+            return {
+                basicAdvantages: advantages.join('，') || '正在努力工作中',
+                timeAnalysis,
+                envAnalysis,
+                eduAnalysis,
+                salaryAnalysis,
+                problems,
+                improvements,
+                scoreAdvantages
+            };
+        }
+
+        // 生成个性化建议
+        function generatePersonalizedSuggestions(params) {
+            const score = parseFloat(params.value);
+            const workYears = parseInt(params.workYears);
+            const jobType = params.jobStability;
+            
+            let shortTerm = [], mediumTerm = [], longTerm = [];
+            
+            // 根据分数和情况生成建议
+            if (score < 1.5) {
+                shortTerm = [
+                    '• 立即评估当前工作的核心问题',
+                    '• 更新简历并了解市场薪资水平',
+                    '• 主动与上级沟通职业发展需求'
+                ];
+                mediumTerm = [
+                    '• 考虑跳槽到更有竞争力的企业',
+                    '• 提升核心技能和专业认证',
+                    '• 建立行业人脉网络'
+                ];
+                longTerm = [
+                    '• 制定5年职业发展规划',
+                    '• 考虑转行到更有前景的领域',
+                    '• 建立个人品牌和影响力'
+                ];
+            } else if (score < 2.5) {
+                shortTerm = [
+                    '• 申请参与更有挑战性的项目',
+                    '• 了解内部晋升机会和要求',
+                    '• 提升工作效率和时间管理'
+                ];
+                mediumTerm = [
+                    '• 考虑考取相关专业认证',
+                    '• 评估外部机会，了解市场水平',
+                    '• 发展跨部门合作关系'
+                ];
+                longTerm = [
+                    '• 瞄准管理岗位或专家路线',
+                    '• 考虑行业内的横向发展',
+                    '• 建立个人专业影响力'
+                ];
+            } else {
+                shortTerm = [
+                    '• 保持当前优势继续发展',
+                    '• 寻找新的挑战和成长机会',
+                    '• 帮助团队成员共同提升'
+                ];
+                mediumTerm = [
+                    '• 考虑承担更大责任',
+                    '• 发展领导和管理能力',
+                    '• 建立更广泛的行业影响'
+                ];
+                longTerm = [
+                    '• 成为行业专家或管理者',
+                    '• 考虑创业或咨询发展',
+                    '• 实现工作与生活的完美平衡'
+                ];
+            }
+            
+            // 根据工作年限调整建议
+            if (workYears === 0) {
+                shortTerm[0] = '• 快速适应工作环境和团队文化';
+                mediumTerm[0] = '• 在前2年内建立专业基础';
+            } else if (workYears >= 10) {
+                longTerm.push('• 考虑传承经验，指导后辈发展');
+            }
+            
+            return { shortTerm, mediumTerm, longTerm };
+        }
+
+        // 更新页面内容
+        function updatePageContent(params) {
+            const score = parseFloat(params.value);
+            const assessmentText = getAssessmentText(params.assessment);
+            const emoji = getEmoji(score);
+            const scoreClass = getScoreClass(score);
+            
+            // 更新主要分数显示
+            document.getElementById('scoreValue').textContent = params.value;
+            document.getElementById('scoreValue').className = `text-2xl font-bold ${scoreClass}`;
+            document.getElementById('scoreLabel').textContent = assessmentText;
+            document.getElementById('emoji').textContent = emoji;
+            
+            // 更新年工作天数和日薪
+            document.getElementById('workDaysYear').textContent = Math.round(parseFloat(params.workDaysPerYear)) + '天';
+            document.getElementById('avgDailySalary').textContent = params.currencySymbol + Math.round(parseFloat(params.dailySalary));
+            
+            // 更新基本信息
+            document.getElementById('cityInfo').textContent = `${getCityText(params.cityFactor)} (${params.countryName})`;
+            document.getElementById('homeTownInfo').innerHTML = params.homeTown === 'yes' ? 
+                '<span class="text-green-600">✓ 在家乡工作</span>' : '<span class="text-orange-600">✗ 不在家乡</span>';
+            document.getElementById('workYearsInfo').textContent = getWorkYearsText(params.workYears);
+            document.getElementById('jobStabilityInfo').textContent = getJobStabilityText(params.jobStability);
+            
+            // 更新工作时间信息
+            document.getElementById('workHoursInfo').textContent = params.workHours + ' 小时';
+            document.getElementById('commuteHoursInfo').textContent = params.commuteHours + ' 小时';
+            document.getElementById('restTimeInfo').textContent = params.restTime + ' 小时';
+            document.getElementById('wfhInfo').textContent = `${params.wfhDaysPerWeek}/${params.workDaysPerWeek} 天`;
+            document.getElementById('annualLeaveInfo').textContent = params.annualLeave + '天';
+            document.getElementById('paidSickLeaveInfo').textContent = params.paidSickLeave + '天';
+            document.getElementById('publicHolidaysInfo').textContent = params.publicHolidays + '天';
+            
+            // 更新工作环境信息
+            document.getElementById('workEnvironmentInfo').textContent = getWorkEnvironmentText(params.workEnvironment);
+            document.getElementById('leadershipInfo').textContent = getLeadershipText(params.leadership);
+            document.getElementById('teamworkInfo').textContent = getTeamworkText(params.teamwork);
+            document.getElementById('shuttleInfo').innerHTML = params.hasShuttle ? 
+                `<span class="text-green-600">✓ ${getShuttleText(params.shuttle, true)}</span>` : '无班车';
+            document.getElementById('canteenInfo').innerHTML = params.hasCanteen ? 
+                `<span class="text-green-600">✓ ${getCanteenText(params.canteen, true)}</span>` : '无食堂';
+            
+            // 更新教育信息
+            document.getElementById('degreeTypeInfo').textContent = getDegreeText(params.degreeType);
+            document.getElementById('schoolTypeInfo').textContent = getSchoolText(params.schoolType);
+            document.getElementById('workYearsInfo2').textContent = getWorkYearsText(params.workYears);
+            document.getElementById('jobStabilityInfo2').textContent = getJobStabilityText(params.jobStability);
+            
+            // 更新薪资信息
+            document.getElementById('dailySalaryInfo').textContent = params.currencySymbol + Math.round(parseFloat(params.dailySalary)) + '/天';
+            document.getElementById('workDaysInfo').textContent = Math.round(parseFloat(params.workDaysPerYear)) + '天';
+            
+            // 更新工作性价比评估区域
+            document.getElementById('finalScoreNumber').textContent = params.value;
+            document.getElementById('finalScoreNumber').className = `score-number ${scoreClass}`;
+            document.getElementById('finalScoreText').textContent = assessmentText;
+            document.getElementById('finalScoreText').className = `score-text ${scoreClass}`;
+            
+            // 生成并更新分析文本
+            const analyses = generateAnalysisTexts(params);
+            document.getElementById('basicAdvantagesText').textContent = analyses.basicAdvantages;
+            document.getElementById('timeAnalysisText').textContent = analyses.timeAnalysis;
+            document.getElementById('environmentAnalysisText').textContent = analyses.envAnalysis;
+            document.getElementById('educationAnalysisText').textContent = analyses.eduAnalysis;
+            document.getElementById('salaryAnalysisText').textContent = analyses.salaryAnalysis;
+            document.getElementById('scoreProblemsText').textContent = analyses.problems;
+            document.getElementById('scoreImprovementsText').textContent = analyses.improvements;
+            document.getElementById('scoreAdvantagesText').textContent = analyses.scoreAdvantages;
+            
+            // 生成并更新个性化建议
+            const suggestions = generatePersonalizedSuggestions(params);
+            document.getElementById('shortTermGoals').innerHTML = suggestions.shortTerm.join('<br>');
+            document.getElementById('mediumTermGoals').innerHTML = suggestions.mediumTerm.join('<br>');
+            document.getElementById('longTermGoals').innerHTML = suggestions.longTerm.join('<br>');
+        }
+
+        // 下载报告
+        function downloadReport() {
+            const params = getUrlParams();
+            const reportContent = generateTextReport(params);
+            
+            const blob = new Blob([reportContent], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `工作性价比报告_${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // 分享报告
+        function shareReport() {
+            const params = getUrlParams();
+            const shareText = `我的工作性价比评估结果：${params.value}分，年工作${Math.round(parseFloat(params.workDaysPerYear))}天，平均日薪${params.currencySymbol}${Math.round(parseFloat(params.dailySalary))}。快来测试你的工作值得度吧！`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: '工作性价比评估结果',
+                    text: shareText,
+                    url: window.location.href
+                }).catch(console.error);
+            } else if (navigator.clipboard) {
+                navigator.clipboard.writeText(shareText + ' ' + window.location.href).then(() => {
+                    alert('分享链接已复制到剪贴板！');
+                }).catch(() => {
+                    alert('复制失败，请手动复制链接');
+                });
+            } else {
+                alert('请手动复制链接进行分享');
+            }
+        }
+
+        // 生成文本报告
+        function generateTextReport(params) {
+            const analyses = generateAnalysisTexts(params);
+            const suggestions = generatePersonalizedSuggestions(params);
+            
+            return `薪资值得度评估报告
+==================
+
+📊 基本信息
+- 工作性价比分数：${params.value} (${getAssessmentText(params.assessment)})
+- 平均日薪：${params.currencySymbol}${Math.round(parseFloat(params.dailySalary))}
+- 年工作天数：${Math.round(parseFloat(params.workDaysPerYear))}天
+- 工作地区：${getCityText(params.cityFactor)} (${params.countryName})
+
+⏱️ 工作时间
+- 每日工时：${params.workHours}小时
+- 通勤时间：${params.commuteHours}小时  
+- 休息时间：${params.restTime}小时
+- 每周工作：${params.workDaysPerWeek}天
+- 远程办公：${params.wfhDaysPerWeek}/${params.workDaysPerWeek}天
+- 年假：${params.annualLeave}天
+- 病假：${params.paidSickLeave}天
+- 法定假日：${params.publicHolidays}天
+
+🏢 工作环境
+- 办公环境：${getWorkEnvironmentText(params.workEnvironment)}
+- 领导关系：${getLeadershipText(params.leadership)}
+- 同事关系：${getTeamworkText(params.teamwork)}
+- 是否家乡：${params.homeTown === 'yes' ? '是' : '否'}
+- 班车服务：${getShuttleText(params.shuttle, params.hasShuttle)}
+- 食堂情况：${getCanteenText(params.canteen, params.hasCanteen)}
+
+📚 教育背景
+- 学历：${getDegreeText(params.degreeType)}
+- 学校：${getSchoolText(params.schoolType)}
+- 工作年限：${getWorkYearsText(params.workYears)}
+- 工作性质：${getJobStabilityText(params.jobStability)}
+
+💡 综合评价
+${analyses.problems}
+
+📋 改善建议
+${analyses.improvements}
+
+🎯 个性化发展建议
+短期目标：
+${suggestions.shortTerm.map(s => s.replace('• ', '')).join('\n')}
+
+中期规划：
+${suggestions.mediumTerm.map(s => s.replace('• ', '')).join('\n')}
+
+长期愿景：
+${suggestions.longTerm.map(s => s.replace('• ', '')).join('\n')}
+
+生成时间：${new Date().toLocaleString('zh-CN')}
+官网：worthjob.zippland.com`;
+        }
+
+        // 页面加载时应用URL参数
+        document.addEventListener('DOMContentLoaded', function() {
+            const params = getUrlParams();
+            updatePageContent(params);
+            
+            // 初始化页面动画
+            document.querySelectorAll('.animate-fade-in').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+            });
+            
+            // 添加页面动画
+            const cards = document.querySelectorAll('.animate-fade-in');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>
