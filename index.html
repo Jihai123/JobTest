@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>这b班上得值不值·纯净版 - 全面评估你的工作真实价值</title>
+    <title>这b班上得值不值·增强版 - 全面评估你的工作真实价值</title>
     <meta name="description" content="综合考虑薪资、工作时间、通勤、环境等因素，科学评估工作性价比">
     <meta name="keywords" content="薪资计算器,工作价值,性价比,PPP,购买力平价,工作评估">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="module" src="/js/calculator.js"></script>
-
     <style>
         .gradient-bg {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -113,7 +112,7 @@
         .score-poor { color: #dc2626; }
         .score-terrible { color: #be185d; }
 
-        /* 新增：工作性价比评估专用样式 */
+        /* 工作性价比评估专用样式 */
         .result-section {
             background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             border: 2px solid #cbd5e1;
@@ -221,6 +220,49 @@
             animation: pulse-glow 2s infinite;
         }
 
+        /* 新增选填区域的特殊样式 */
+        .optional-section {
+            border: 2px dashed #cbd5e1;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .optional-section.expanded {
+            border-style: solid;
+            border-color: #3b82f6;
+            background: rgba(255, 255, 255, 0.98);
+        }
+
+        .toggle-button {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+        }
+
+        .toggle-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+        }
+
+        .toggle-button.active {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+        }
+
+        .enhanced-notice {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 1px solid #f59e0b;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
         @media (max-width: 768px) {
             .score-circle {
                 width: 120px;
@@ -243,10 +285,24 @@
         <!-- 标题区域 -->
         <div class="text-center mb-8">
             <h1 class="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                这b班上得值不值·纯净版
+                这b班上得值不值·增强版
             </h1>
             <p class="text-gray-600 text-lg">全面评估你的工作真实价值</p>
             <p class="text-gray-500 text-sm mt-2">综合考虑薪资、工作时间、环境等多维度因素</p>
+            
+            <!-- 增强版说明 -->
+            <div class="enhanced-notice mt-6">
+                <div class="flex items-center justify-center mb-2">
+                    <svg class="w-5 h-5 text-yellow-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                    <span class="font-semibold text-yellow-800">增强版功能</span>
+                </div>
+                <p class="text-yellow-700 text-sm">
+                    新增24个影响工作体验的维度评估，包括职业发展、工作压力、公司前景等，让评估更贴近真实感受！
+                    <strong>这些维度为选填项，不填写不影响基础计算。</strong>
+                </p>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -262,11 +318,6 @@
                                 年薪总包（元）
                             </label>
                            <input type="number" id="salary" class="form-input" placeholder="输入年薪，如：300000" value="" autocomplete="off">
-                        </div>
-
-                        <!-- 快速操作 -->
-                        <div class="mt-6 flex justify-center gap-3">
-          
                         </div>
                         
                         <div>
@@ -408,7 +459,7 @@
                     </div>
                 </div>
 
-                <!-- 工作环境 - 关键修复区域 -->
+                <!-- 工作环境 -->
                 <div class="card p-6">
                     <h2 class="text-xl font-semibold mb-4 text-gray-800">工作环境</h2>
                     
@@ -512,6 +563,342 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- 增强评估维度 - 选填区域 -->
+                <div class="card optional-section p-6" id="enhancedSection">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-semibold text-gray-800">🚀 增强评估维度</h2>
+                        <button type="button" id="toggleEnhanced" class="toggle-button">
+                            <span id="toggleText">展开选填项</span>
+                            <svg id="toggleIcon" class="w-4 h-4 inline-block ml-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div class="text-sm text-gray-600 mb-4">
+                        <p class="font-medium text-orange-700 mb-2">💡 这些维度为选填项，可让评估更贴近真实体验</p>
+                        <p>不填写将使用中性默认值，不影响基础计算结果</p>
+                    </div>
+
+                    <div id="enhancedContent" class="space-y-6" style="display: none;">
+                        <!-- 第一组：职业发展相关 -->
+                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                            <h3 class="text-lg font-medium text-blue-800 mb-4">📈 职业发展</h3>
+                            
+                            <!-- 就业市场环境 -->
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">就业市场环境</label>
+                                <div class="radio-group">
+                                    <div class="radio-button" data-group="jobMarket" data-value="0.9">超级内卷</div>
+                                    <div class="radio-button" data-group="jobMarket" data-value="0.95">竞争激烈</div>
+                                    <div class="radio-button active" data-group="jobMarket" data-value="1.0">一般般</div>
+                                    <div class="radio-button" data-group="jobMarket" data-value="1.08">相对容易</div>
+                                    <div class="radio-button" data-group="jobMarket" data-value="1.15">躺着都有工作</div>
+                                </div>
+                            </div>
+
+                            <!-- 职业发展空间 -->
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">职业发展空间</label>
+                                <div class="radio-group">
+                                    <div class="radio-button" data-group="careerGrowth" data-value="0.8">死胡同</div>
+                                    <div class="radio-button" data-group="careerGrowth" data-value="0.9">空间有限</div>
+                                    <div class="radio-button active" data-group="careerGrowth" data-value="1.0">发展平稳</div>
+                                    <div class="radio-button" data-group="careerGrowth" data-value="1.2">前景广阔</div>
+                                    <div class="radio-button" data-group="careerGrowth" data-value="1.3">无限可能</div>
+                                </div>
+                            </div>
+
+                            <!-- 技能增长性 -->
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">技能增长性</label>
+                                <div class="radio-group">
+                                    <div class="radio-button" data-group="skillGrowth" data-value="0.9">完全重复劳动</div>
+                                    <div class="radio-button" data-group="skillGrowth" data-value="0.95">略有提升</div>
+                                    <div class="radio-button active" data-group="skillGrowth" data-value="1.0">稳步成长</div>
+                                    <div class="radio-button" data-group="skillGrowth" data-value="1.1">快速进步</div>
+                                    <div class="radio-button" data-group="skillGrowth" data-value="1.15">爆炸式成长</div>
+                                </div>
+                            </div>
+
+                            <!-- 薪资调整频率/幅度 -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">薪资调整预期</label>
+                                <div class="radio-group">
+                                    <div class="radio-button" data-group="salaryGrowth" data-value="0.85">基本不涨</div>
+                                    <div class="radio-button" data-group="salaryGrowth" data-value="0.92">偶尔象征性</div>
+                                    <div class="radio-button active" data-group="salaryGrowth" data-value="1.0">年度小幅</div>
+                                    <div class="radio-button" data-group="salaryGrowth" data-value="1.15">定期合理</div>
+                                    <div class="radio-button" data-group="salaryGrowth" data-value="1.25">涨幅可观</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 第二组：工作体验相关 -->
+                        <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                            <h3 class="text-lg font-medium text-green-800 mb-4">💼 工作体验</h3>
+                            
+                            <!-- 工作压力/强度 -->
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">工作压力/强度</label>
+                                <div class="radio-group">
+                                    <div class="radio-button" data-group="workPressure" data-value="0.8">压力山大</div>
+                                    <div class="radio-button" data-group="workPressure" data-value="0.9">偏高压力</div>
+                                    <div class="radio-button active" data-group="workPressure" data-value="1.0">适中</div>
+                                    <div class="radio-button" data-group="workPressure" data-value="1.1">相对轻松</div>
+                                    <div class="radio-button" data-group="workPressure" data-value="1.2">非常轻松</div>
+                                </div>
+                            </div>
+
+                            <!-- 工作内容满意度 -->
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">工作内容满意度</label>
+                                <div class="radio-group">
+                                    <div class="radio-button" data-group="jobSatisfaction" data-value="0.9">深恶痛绝</div>
+                                    <div class="radio-button" data-group="jobSatisfaction" data-value="0.95">不太喜欢</div>
+                                    <div class="radio-button active" data-group="jobSatisfaction" data-value="1.0">凑合</div>
+                                    <div class="radio-button" data-group="jobSatisfaction" data-value="1.1">还不错</div>
+                                    <div class="radio-button" data-group="jobSatisfaction" data-value="1.15">热爱至极</div>
+                                </div>
+                            </div>
+
+                            <!-- 加班文化 -->
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">加班文化</label>
+                                <div class="radio-group">
+                                    <div class="radio-button" data-group="overtimeCulture" data-value="0.9">996/007</div>
+                                    <div class="radio-button" data-group="overtimeCulture" data-value="0.95">经常被迫</div>
+                                    <div class="radio-button active" data-group="overtimeCulture" data-value="1.0">偶尔需要</div>
+                                    <div class="radio-button" data-group="overtimeCulture" data-value="1.05">基本不加班</div>
+                                    <div class="radio-button" data-group="overtimeCulture" data-value="1.1">绝对不加班</div>
+                                </div>
+                            </div>
+
+                            <!-- 工作成就感 -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">工作成就感</label>
+                                <div class="radio-group">
+                                    <div class="radio-button" data-group="achievement" data-value="0.9">螺丝钉</div>
+                                    <div class="radio-button" data-group="achievement" data-value="0.95">价值有限</div>
+                                    <div class="radio-button active" data-group="achievement" data-value="1.0">还算有用</div>
+                                    <div class="radio-button" data-group="achievement" data-value="1.08">很有意义</div>
+                                    <div class="radio-button" data-group="achievement" data-value="1.1">改变世界</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 第三组：公司环境相关 -->
+                        <div class="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                            <h3 class="text-lg font-medium text-purple-800 mb-4">🏢 公司环境</h3>
+                            
+                            <!-- 公司前景/稳定性 -->
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">公司前景/稳定性</label>
+                                <div class="radio-group">
+                                    <div class="radio-button" data-group="companyFuture" data-value="0.85">随时倒闭</div>
+                                    <div class="radio-button" data-group="companyFuture" data-value="0.92">前景堪忧</div>
+                                    <div class="radio-button active" data-group="companyFuture" data-value="1.0">平稳发展</div>
+                                    <div class="radio-button" data-group="companyFuture" data-value="1.1">蒸蒸日上</div>
+                                    <div class="radio-button" data-group="companyFuture" data-value="1.2">独角兽潜力</div>
+                                </div>
+                            </div>
+
+                            <!-- 内部政治复杂度 -->
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">内部政治复杂度</label>
+                                <div class="radio-group">
+                                    <div class="radio-button" data-group="officePolitics" data-value="0.96">宫斗剧现场</div>
+                                    <div class="radio-button" data-group="officePolitics" data-value="0.98">关系复杂</div>
+                                    <div class="radio-button active" data-group="officePolitics" data-value="1.0">偶有摩擦</div>
+                                    <div class="radio-button" data-group="officePolitics" data-value="1.02">相对简单</div>
+                                    <div class="radio-button" data-group="officePolitics" data-value="1.05">纯净如水</div>
+                                </div>
+                            </div>
+
+                            <!-- 团队氛围 -->
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">团队氛围</label>
+                                <div class="radio-group">
+                                    <div class="radio-button" data-group="teamAtmosphere" data-value="0.96">各自为战</div>
+                                    <div class="radio-button" data-group="teamAtmosphere" data-value="0.98">竞争激烈</div>
+                                    <div class="radio-button active" data-group="teamAtmosphere" data-value="1.0">平淡合作</div>
+                                    <div class="radio-button" data-group="teamAtmosphere" data-value="1.03">团结协作</div>
+                                    <div class="radio-button" data-group="teamAtmosphere" data-value="1.05">像一家人</div>
+                                </div>
+                            </div>
+
+                            <!-- 硬件设备/办公条件 -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">硬件设备/办公条件</label>
+                                <div class="radio-group">
+                                    <div class="radio-button" data-group="officeEquipment" data-value="0.97">破烂不堪</div>
+                                    <div class="radio-button" data-group="officeEquipment" data-value="0.99">凑合能用</div>
+                                    <div class="radio-button active" data-group="officeEquipment" data-value="1.0">标准配置</div>
+                                    <div class="radio-button" data-group="officeEquipment" data-value="1.03">设备不错</div>
+                                    <div class="radio-button" data-group="officeEquipment" data-value="1.05">顶级配置</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 第四组：工作便利性相关 -->
+                        <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                            <h3 class="text-lg font-medium text-yellow-800 mb-4">🔧 工作便利性</h3>
+                            
+                            <!-- 请假难易程度 -->
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">请假难易程度</label>
+                                <div class="radio-group">
+                                    <div class="radio-button" data-group="leaveEase" data-value="0.95">难于登天</div>
+                                    <div class="radio-button" data-group="leaveEase" data-value="0.98">需要理由充分</div>
+                                    <div class="radio-button active" data-group="leaveEase" data-value="1.0">正常流程</div>
+                                    <div class="radio-button" data-group="leaveEase" data-value="1.05">比较容易</div>
+                                    <div class="radio-button" data-group="leaveEase" data-value="1.1">随时可请</div>
+                                </div>
+                            </div>
+
+                            <!-- 报销便利性 -->
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">报销便利性</label>
+                                <div class="radio-group">
+                                    <div class="radio-button" data-group="reimbursement" data-value="0.97">基本不给报</div>
+                                    <div class="radio-button" data-group="reimbursement" data-value="0.99">流程复杂</div>
+                                    <div class="radio-button active" data-group="reimbursement" data-value="1.0">一般般</div>
+                                    <div class="radio-button" data-group="reimbursement" data-value="1.03">比较顺畅</div>
+                                    <div class="radio-button" data-group="reimbursement" data-value="1.05">秒到账</div>
+                                </div>
+                            </div>
+
+                            <!-- 工作地点便利性 -->
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">工作地点便利性</label>
+                                <div class="radio-group">
+                                    <div class="radio-button" data-group="locationConvenience" data-value="0.97">荒郊野外</div>
+                                    <div class="radio-button" data-group="locationConvenience" data-value="0.99">配套一般</div>
+                                    <div class="radio-button active" data-group="locationConvenience" data-value="1.0">比较便利</div>
+                                    <div class="radio-button" data-group="locationConvenience" data-value="1.03">非常便利</div>
+                                </div>
+                            </div>
+
+                            <!-- 工作地点稳定性 -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">工作地点稳定性</label>
+                                <div class="radio-group">
+                                    <div class="radio-button" data-group="locationStability" data-value="0.98">经常出差/搬迁</div>
+                                    <div class="radio-button" data-group="locationStability" data-value="0.99">偶尔变动</div>
+                                    <div class="radio-button active" data-group="locationStability" data-value="1.0">基本固定</div>
+                                    <div class="radio-button" data-group="locationStability" data-value="1.02">完全稳定</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 第五组：个人发展相关 -->
+                        <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+                            <h3 class="text-lg font-medium text-red-800 mb-4">🎯 个人发展</h3>
+                            
+                            <!-- 工作自主性 -->
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">工作自主性</label>
+                                <div class="radio-group">
+                                    <div class="radio-button" data-group="workAutonomy" data-value="0.97">严格管控</div>
+                                    <div class="radio-button" data-group="workAutonomy" data-value="0.99">管得较严</div>
+                                    <div class="radio-button active" data-group="workAutonomy" data-value="1.0">中等自由</div>
+                                    <div class="radio-button" data-group="workAutonomy" data-value="1.03">比较自主</div>
+                                    <div class="radio-button" data-group="workAutonomy" data-value="1.05">完全自由</div>
+                                </div>
+                            </div>
+
+                            <!-- 学习时间支持 -->
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">学习时间支持</label>
+                                <div class="radio-group">
+                                    <div class="radio-button" data-group="learningSupport" data-value="0.98">禁止摸鱼学习</div>
+                                    <div class="radio-button" data-group="learningSupport" data-value="0.99">很少时间</div>
+                                    <div class="radio-button active" data-group="learningSupport" data-value="1.0">偶尔可以</div>
+                                    <div class="radio-button" data-group="learningSupport" data-value="1.03">比较支持</div>
+                                    <div class="radio-button" data-group="learningSupport" data-value="1.05">鼓励学习</div>
+                                </div>
+                            </div>
+
+                            <!-- 副业/兼职容忍度 -->
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">副业/兼职容忍度</label>
+                                <div class="radio-group">
+                                    <div class="radio-button" data-group="sideJobTolerance" data-value="0.98">严格禁止</div>
+                                    <div class="radio-button" data-group="sideJobTolerance" data-value="0.99">不太允许</div>
+                                    <div class="radio-button active" data-group="sideJobTolerance" data-value="1.0">睁一只眼闭一只眼</div>
+                                    <div class="radio-button" data-group="sideJobTolerance" data-value="1.03">比较宽松</div>
+                                    <div class="radio-button" data-group="sideJobTolerance" data-value="1.05">完全支持</div>
+                                </div>
+                            </div>
+
+                            <!-- 职场学习氛围 -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">职场学习氛围</label>
+                                <div class="radio-group">
+                                    <div class="radio-button" data-group="learningAtmosphere" data-value="0.98">各藏绝活</div>
+                                    <div class="radio-button" data-group="learningAtmosphere" data-value="0.99">较少交流</div>
+                                    <div class="radio-button active" data-group="learningAtmosphere" data-value="1.0">偶有分享</div>
+                                    <div class="radio-button" data-group="learningAtmosphere" data-value="1.03">经常交流</div>
+                                    <div class="radio-button" data-group="learningAtmosphere" data-value="1.05">知识共享</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 第六组：其他因素 -->
+                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-800 mb-4">⚖️ 其他因素</h3>
+                            
+                            <!-- 福利保障完善度 -->
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">福利保障完善度</label>
+                                <div class="radio-group">
+                                    <div class="radio-button" data-group="welfareComplete" data-value="0.95">三无产品</div>
+                                    <div class="radio-button" data-group="welfareComplete" data-value="0.98">基础保障</div>
+                                    <div class="radio-button active" data-group="welfareComplete" data-value="1.0">标准配置</div>
+                                    <div class="radio-button" data-group="welfareComplete" data-value="1.05">福利不错</div>
+                                    <div class="radio-button" data-group="welfareComplete" data-value="1.08">福利超好</div>
+                                </div>
+                            </div>
+
+                            <!-- 性别/年龄友好度 -->
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">性别/年龄友好度</label>
+                                <div class="radio-group">
+                                    <div class="radio-button" data-group="diversityFriendly" data-value="0.97">明显歧视</div>
+                                    <div class="radio-button" data-group="diversityFriendly" data-value="0.99">略有偏见</div>
+                                    <div class="radio-button active" data-group="diversityFriendly" data-value="1.0">基本公平</div>
+                                    <div class="radio-button" data-group="diversityFriendly" data-value="1.03">比较包容</div>
+                                    <div class="radio-button" data-group="diversityFriendly" data-value="1.05">完全平等</div>
+                                </div>
+                            </div>
+
+                            <!-- 离职难易程度 -->
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">离职难易程度</label>
+                                <div class="radio-group">
+                                    <div class="radio-button" data-group="resignationEase" data-value="0.98">死活不放</div>
+                                    <div class="radio-button" data-group="resignationEase" data-value="0.99">各种刁难</div>
+                                    <div class="radio-button active" data-group="resignationEase" data-value="1.0">正常流程</div>
+                                    <div class="radio-button" data-group="resignationEase" data-value="1.02">比较顺利</div>
+                                    <div class="radio-button" data-group="resignationEase" data-value="1.03">随时走人</div>
+                                </div>
+                            </div>
+
+                            <!-- 行业景气度 -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">行业景气度</label>
+                                <div class="radio-group">
+                                    <div class="radio-button" data-group="industryProspect" data-value="0.9">夕阳产业</div>
+                                    <div class="radio-button" data-group="industryProspect" data-value="0.95">逐渐萎缩</div>
+                                    <div class="radio-button active" data-group="industryProspect" data-value="1.0">平稳发展</div>
+                                    <div class="radio-button" data-group="industryProspect" data-value="1.08">上升期</div>
+                                    <div class="radio-button" data-group="industryProspect" data-value="1.15">朝阳产业</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- 右侧显示区域 - 简化后只保留基础数据 -->
@@ -529,6 +916,10 @@
                             <span class="text-sm text-gray-600">平均日薪</span>
                             <span id="dailySalaryDisplay" class="font-semibold">--</span>
                         </div>
+                        <div class="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+                            <span class="text-sm text-gray-600">增强维度</span>
+                            <span id="enhancedFactorDisplay" class="font-semibold text-green-700">默认</span>
+                        </div>
                     </div>
                 </div>
 
@@ -540,6 +931,7 @@
                         <p>• 考虑了PPP购买力平价调整</p>
                         <p>• 包含工作时长、通勤、环境等因素</p>
                         <p>• 个人背景（学历、经验）影响期望值</p>
+                        <p>• <strong>增强版新增24个工作体验维度</strong></p>
                         <p>• 分数越高表示性价比越好</p>
                     </div>
                     
@@ -627,10 +1019,9 @@
                     </div>
                 </div>
             </div>
-
-
         </div>
     </div>
+
 <script>
 var _hmt = _hmt || [];
 (function() {
