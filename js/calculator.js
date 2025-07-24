@@ -1,24 +1,24 @@
 // PPP转换因子数据
-const pppFactors = {
-    'CN': 4.19, 'US': 1.00, 'JP': 102.84, 'DE': 0.75, 'GB': 0.70,
-    'SG': 0.84, 'AU': 1.47, 'CA': 1.21, 'FR': 0.73, 'KR': 861.82
-};
+     const pppFactors = {
+            'CN': 4.19, 'US': 1.00, 'JP': 102.84, 'DE': 0.75, 'GB': 0.70,
+            'SG': 0.84, 'AU': 1.47, 'CA': 1.21, 'FR': 0.73, 'KR': 861.82
+        };
 
-// 货币符号映射
-const currencySymbols = {
-  CN: '¥',
-  US: '$',
-  JP: '¥',
-  DE: '€',
-  GB: '£',
-  SG: 'S$',
-  AU: 'A$',
-  CA: 'C$',
-  FR: '€',
-  KR: '₩'
-};
+        // 货币符号映射
+        const currencySymbols = {
+          CN: '¥',
+          US: '$',
+          JP: '¥',
+          DE: '€',
+          GB: '£',
+          SG: 'S$',
+          AU: 'A$',
+          CA: 'C$',
+          FR: '€',
+          KR: '₩'
+        };
 
-// 表单数据
+// 表单数据（原有数据保持不变）
 let formData = {
     salary: '',
     country: 'CN',
@@ -44,7 +44,32 @@ let formData = {
     shuttle: 1.0,
     hasCanteen: false,
     canteen: 1.0,
-    education: 1.0
+    education: 1.0,
+    // 新增24个维度，默认值为1.0（中性值）
+    jobMarket: 1.0,          // 就业市场环境
+    careerGrowth: 1.0,       // 职业发展空间
+    skillGrowth: 1.0,        // 技能增长性
+    salaryGrowth: 1.0,       // 薪资调整预期
+    workPressure: 1.0,       // 工作压力/强度
+    jobSatisfaction: 1.0,    // 工作内容满意度
+    overtimeCulture: 1.0,    // 加班文化
+    achievement: 1.0,        // 工作成就感
+    companyFuture: 1.0,      // 公司前景/稳定性
+    officePolitics: 1.0,     // 内部政治复杂度
+    teamAtmosphere: 1.0,     // 团队氛围
+    officeEquipment: 1.0,    // 硬件设备/办公条件
+    leaveEase: 1.0,          // 请假难易程度
+    reimbursement: 1.0,      // 报销便利性
+    locationConvenience: 1.0, // 工作地点便利性
+    locationStability: 1.0,   // 工作地点稳定性
+    workAutonomy: 1.0,       // 工作自主性
+    learningSupport: 1.0,    // 学习时间支持
+    sideJobTolerance: 1.0,   // 副业/兼职容忍度
+    learningAtmosphere: 1.0, // 职场学习氛围
+    welfareComplete: 1.0,    // 福利保障完善度
+    diversityFriendly: 1.0,  // 性别/年龄友好度
+    resignationEase: 1.0,    // 离职难易程度
+    industryProspect: 1.0    // 行业景气度
 };
 
 // 等待DOM加载完成后初始化
@@ -67,6 +92,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         initializeEventListeners();
         setupRadioButtons();
+        setupEnhancedToggle();
         updateEducationFactor();
         updateBachelorBackground();
         
@@ -76,6 +102,35 @@ document.addEventListener('DOMContentLoaded', function() {
         calculate();
     }, 100);
 });
+
+// 设置增强版切换功能
+function setupEnhancedToggle() {
+    const toggleButton = document.getElementById('toggleEnhanced');
+    const enhancedContent = document.getElementById('enhancedContent');
+    const enhancedSection = document.getElementById('enhancedSection');
+    const toggleText = document.getElementById('toggleText');
+    const toggleIcon = document.getElementById('toggleIcon');
+    
+    if (toggleButton && enhancedContent) {
+        toggleButton.addEventListener('click', function() {
+            const isExpanded = enhancedContent.style.display !== 'none';
+            
+            if (isExpanded) {
+                enhancedContent.style.display = 'none';
+                enhancedSection.classList.remove('expanded');
+                toggleButton.classList.remove('active');
+                toggleText.textContent = '展开选填项';
+                toggleIcon.style.transform = 'rotate(0deg)';
+            } else {
+                enhancedContent.style.display = 'block';
+                enhancedSection.classList.add('expanded');
+                toggleButton.classList.add('active');
+                toggleText.textContent = '收起选填项';
+                toggleIcon.style.transform = 'rotate(180deg)';
+            }
+        });
+    }
+}
 
 // 初始化所有事件监听器
 function initializeEventListeners() {
@@ -335,7 +390,60 @@ function getDisplaySalary() {
     return dailySalaryInCNY.toFixed(2);
 }
 
-// 主计算函数
+// 计算增强维度系数
+function calculateEnhancedFactor() {
+    // 按重要程度分组计算
+    
+    // 高影响维度（权重较大）
+    const highImpactFactors = [
+        formData.careerGrowth,    // 职业发展空间
+        formData.workPressure,    // 工作压力/强度  
+        formData.salaryGrowth,    // 薪资调整预期
+        formData.companyFuture,   // 公司前景稳定
+        formData.jobMarket        // 就业市场环境
+    ];
+    
+    // 中影响维度
+    const mediumImpactFactors = [
+        formData.skillGrowth,     // 技能增长性
+        formData.jobSatisfaction, // 工作内容满意
+        formData.overtimeCulture, // 加班文化
+        formData.achievement,     // 工作成就感
+        formData.leaveEase        // 请假难易程度
+    ];
+    
+    // 低影响维度
+    const lowImpactFactors = [
+        formData.welfareComplete,     // 福利保障完善
+        formData.locationConvenience, // 工作地点便利性
+        formData.learningSupport,     // 学习时间支持
+        formData.officePolitics,      // 内部政治复杂度
+        formData.teamAtmosphere,      // 团队氛围
+        formData.officeEquipment,     // 硬件设备/办公条件
+        formData.reimbursement,       // 报销便利性
+        formData.locationStability,   // 工作地点稳定性
+        formData.workAutonomy,        // 工作自主性
+        formData.sideJobTolerance,    // 副业/兼职容忍度
+        formData.learningAtmosphere,  // 职场学习氛围
+        formData.diversityFriendly,   // 性别/年龄友好度
+        formData.resignationEase,     // 离职难易程度
+        formData.industryProspect     // 行业景气度
+    ];
+    
+    // 分别计算各组平均值
+    const highImpactAvg = highImpactFactors.reduce((sum, factor) => sum + factor, 0) / highImpactFactors.length;
+    const mediumImpactAvg = mediumImpactFactors.reduce((sum, factor) => sum + factor, 0) / mediumImpactFactors.length;
+    const lowImpactAvg = lowImpactFactors.reduce((sum, factor) => sum + factor, 0) / lowImpactFactors.length;
+    
+    // 加权平均，高影响维度权重更大
+    const enhancedFactor = (highImpactAvg * 0.5 + mediumImpactAvg * 0.3 + lowImpactAvg * 0.2);
+    
+    console.log(`增强维度系数计算: 高影响=${highImpactAvg.toFixed(3)}, 中影响=${mediumImpactAvg.toFixed(3)}, 低影响=${lowImpactAvg.toFixed(3)}, 综合=${enhancedFactor.toFixed(3)}`);
+    
+    return enhancedFactor;
+}
+
+// 主计算函数（增强版）
 function calculate() {
     console.log('开始计算...');
     console.log('当前formData:', formData);
@@ -344,6 +452,27 @@ function calculate() {
     const workDays = calculateWorkingDays();
     const dailySalary = getDisplaySalary();
     const currency = currencySymbols[formData.country] || '¥';
+    
+    // 计算增强维度系数
+    const enhancedFactor = calculateEnhancedFactor();
+    
+    // 更新增强系数显示
+    const enhancedFactorElement = document.getElementById('enhancedFactorDisplay');
+    if (enhancedFactorElement) {
+        const factorText = Math.abs(enhancedFactor - 1.0) < 0.01 ? '默认' : 
+                          enhancedFactor > 1.05 ? '积极' : 
+                          enhancedFactor < 0.95 ? '消极' : '中性';
+        enhancedFactorElement.textContent = factorText;
+        
+        // 根据系数值设置颜色
+        if (enhancedFactor > 1.05) {
+            enhancedFactorElement.className = 'font-semibold text-green-700';
+        } else if (enhancedFactor < 0.95) {
+            enhancedFactorElement.className = 'font-semibold text-red-600';
+        } else {
+            enhancedFactorElement.className = 'font-semibold text-gray-600';
+        }
+    }
     
     const workDaysElement = document.getElementById('workDaysDisplay');
     const dailySalaryElement = document.getElementById('dailySalaryDisplay');
@@ -373,12 +502,12 @@ function calculate() {
     
     const effectiveCommuteHours = commuteHours * officeDaysRatio * shuttleFactor;
     
-    // 环境因素
-    const environmentFactor = formData.workEnvironment * 
-                            formData.leadership * 
-                            formData.teamwork * 
-                            formData.cityFactor * 
-                            canteenFactor;
+    // 基础环境因素（保持原有计算方式）
+    const baseEnvironmentFactor = formData.workEnvironment * 
+                                 formData.leadership * 
+                                 formData.teamwork * 
+                                 formData.cityFactor * 
+                                 canteenFactor;
     
     // 家乡工作系数
     const homeTownFactor = formData.homeTown === 'yes' ? 1.1 : 1.0;
@@ -415,11 +544,13 @@ function calculate() {
         experienceSalaryMultiplier = 1 + (baseSalaryMultiplier - 1) * salaryGrowthFactor;
     }
     
-    // 最终计算
-    const value = (dailySalaryCNY * environmentFactor * homeTownFactor) / 
+    // 最终计算（增强版算法）
+    // 在原有算法基础上乘以增强维度系数
+    const value = (dailySalaryCNY * baseEnvironmentFactor * enhancedFactor * homeTownFactor) / 
                  (35 * (workHours + effectiveCommuteHours - 0.5 * restTime) * formData.education * experienceSalaryMultiplier);
     
     console.log(`计算结果: ${value.toFixed(2)}`);
+    console.log(`基础环境系数: ${baseEnvironmentFactor.toFixed(3)}, 增强维度系数: ${enhancedFactor.toFixed(3)}`);
     updateDisplay(value);
 }
 
@@ -560,7 +691,33 @@ function viewDetailedReport() {
         workYears: formData.workYears,
         jobStability: formData.jobStability,
         countryCode: formData.country,
-        countryName: document.getElementById('country')?.selectedOptions[0]?.text.replace(/\s*\(.*/, '') || formData.country
+        countryName: document.getElementById('country')?.selectedOptions[0]?.text.replace(/\s*\(.*/, '') || formData.country,
+        // 新增增强版维度数据
+        enhancedFactor: calculateEnhancedFactor().toFixed(3),
+        jobMarket: formData.jobMarket,
+        careerGrowth: formData.careerGrowth,
+        skillGrowth: formData.skillGrowth,
+        salaryGrowth: formData.salaryGrowth,
+        workPressure: formData.workPressure,
+        jobSatisfaction: formData.jobSatisfaction,
+        overtimeCulture: formData.overtimeCulture,
+        achievement: formData.achievement,
+        companyFuture: formData.companyFuture,
+        officePolitics: formData.officePolitics,
+        teamAtmosphere: formData.teamAtmosphere,
+        officeEquipment: formData.officeEquipment,
+        leaveEase: formData.leaveEase,
+        reimbursement: formData.reimbursement,
+        locationConvenience: formData.locationConvenience,
+        locationStability: formData.locationStability,
+        workAutonomy: formData.workAutonomy,
+        learningSupport: formData.learningSupport,
+        sideJobTolerance: formData.sideJobTolerance,
+        learningAtmosphere: formData.learningAtmosphere,
+        welfareComplete: formData.welfareComplete,
+        diversityFriendly: formData.diversityFriendly,
+        resignationEase: formData.resignationEase,
+        industryProspect: formData.industryProspect
     };
 
     const query = new URLSearchParams(payload).toString();
@@ -581,7 +738,9 @@ function downloadReport() {
     const countryElement = document.getElementById('country');
     const countryText = countryElement ? countryElement.selectedOptions[0].text : '未知';
     
-    const reportContent = `薪资值得度评估报告
+    const enhancedFactor = calculateEnhancedFactor();
+    
+    const reportContent = `薪资值得度评估报告（增强版）
 ===================
 
 基本信息：
@@ -596,7 +755,17 @@ function downloadReport() {
 
 综合评估：
 - 工作性价比分数：${value.toFixed(2)}/10 (${assessment.text})
-- 教育系数：${formData.education}
+- 基础教育系数：${formData.education}
+- 增强维度系数：${enhancedFactor.toFixed(3)}
+
+增强维度详情：
+- 就业市场环境：${formData.jobMarket}
+- 职业发展空间：${formData.careerGrowth}
+- 技能增长性：${formData.skillGrowth}
+- 薪资调整预期：${formData.salaryGrowth}
+- 工作压力强度：${formData.workPressure}
+- 工作内容满意：${formData.jobSatisfaction}
+- 公司前景稳定：${formData.companyFuture}
 
 生成时间：${new Date().toLocaleString('zh-CN')}`;
 
@@ -605,14 +774,14 @@ function downloadReport() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `工作性价比报告_${new Date().toISOString().split('T')[0]}.txt`;
+    a.download = `工作性价比报告增强版_${new Date().toISOString().split('T')[0]}.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 }
 
-// 计算最终分数的辅助函数
+// 计算最终分数的辅助函数（增强版）
 function calculateFinalScore() {
     const dailySalary = calculateDailySalary();
     const workHours = formData.workHours;
@@ -624,7 +793,13 @@ function calculateFinalScore() {
     const shuttleFactor = formData.hasShuttle ? formData.shuttle : 1.0;
     const canteenFactor = formData.hasCanteen ? formData.canteen : 1.0;
     const effectiveCommuteHours = commuteHours * officeDaysRatio * shuttleFactor;
-    const environmentFactor = formData.workEnvironment * formData.leadership * formData.teamwork * formData.cityFactor * canteenFactor;
+    
+    // 基础环境系数
+    const baseEnvironmentFactor = formData.workEnvironment * formData.leadership * formData.teamwork * formData.cityFactor * canteenFactor;
+    
+    // 增强维度系数
+    const enhancedFactor = calculateEnhancedFactor();
+    
     const homeTownFactor = formData.homeTown === 'yes' ? 1.1 : 1.0;
     
     let experienceSalaryMultiplier = 1.0;
@@ -656,6 +831,7 @@ function calculateFinalScore() {
         experienceSalaryMultiplier = 1 + (baseSalaryMultiplier - 1) * salaryGrowthFactor;
     }
     
-    return (dailySalary * environmentFactor * homeTownFactor) / 
+    // 增强版最终计算公式
+    return (dailySalary * baseEnvironmentFactor * enhancedFactor * homeTownFactor) / 
            (35 * (workHours + effectiveCommuteHours - 0.5 * restTime) * formData.education * experienceSalaryMultiplier);
 }
